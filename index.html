@@ -4,51 +4,385 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>کتابخانه PDF هوشمند</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
-    <link rel="stylesheet" href="style.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            font-family: system-ui, 'Segoe UI', Tahoma, sans-serif;
+        }
+
+        .navbar {
+            background: linear-gradient(135deg, #4f46e5, #7c3aed) !important;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            padding: 1rem 0;
+        }
+
+        .navbar-brand {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: white !important;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .card {
+            border: none;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            background: rgba(255,255,255,0.95);
+            margin-bottom: 20px;
+        }
+
+        .card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 50px rgba(0,0,0,0.25);
+        }
+
+        .card-title {
+            color: #4f46e5;
+            font-weight: bold;
+            font-size: 1.3rem;
+            margin-bottom: 1rem;
+        }
+
+        .form-control {
+            border: 2px solid #e0e7ff;
+            border-radius: 12px;
+            padding: 12px;
+            transition: all 0.3s;
+        }
+
+        .form-control:focus {
+            border-color: #4f46e5;
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.2);
+        }
+
+        .progress {
+            height: 25px;
+            border-radius: 12px;
+            background: #f0f4fa;
+            border: 1px solid #e0e7ff;
+        }
+
+        .progress-bar {
+            background: linear-gradient(90deg, #4f46e5, #7c3aed);
+            border-radius: 12px;
+            font-weight: bold;
+            line-height: 25px;
+        }
+
+        .pdf-card {
+            background: white;
+            border-radius: 15px;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-right: 5px solid #4f46e5;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .pdf-card:hover {
+            transform: translateX(-5px);
+            box-shadow: 0 8px 25px rgba(79, 70, 229, 0.2);
+        }
+
+        .pdf-card h5 {
+            color: #1e293b;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .pdf-card p {
+            color: #64748b;
+            margin-bottom: 10px;
+        }
+
+        .btn {
+            border-radius: 10px;
+            padding: 8px 20px;
+            font-weight: bold;
+            transition: all 0.3s;
+            border: none;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #4f46e5, #7c3aed);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(79, 70, 229, 0.4);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(239, 68, 68, 0.4);
+        }
+
+        .modal-content {
+            border: none;
+            border-radius: 20px;
+            overflow: hidden;
+        }
+
+        .modal-header {
+            background: linear-gradient(135deg, #4f46e5, #7c3aed);
+            color: white;
+            border: none;
+            padding: 1rem 1.5rem;
+        }
+
+        .modal-header .btn-close {
+            background: white;
+            opacity: 1;
+        }
+
+        .modal-body {
+            background: #f8fafc;
+            padding: 2rem;
+            min-height: 70vh;
+        }
+
+        .modal-footer {
+            border: none;
+            background: white;
+            padding: 1rem;
+        }
+
+        #pdfCanvas {
+            max-width: 100%;
+            height: auto;
+            border-radius: 10px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+            background: white;
+        }
+
+        #pageInfo {
+            color: #4f46e5;
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+
+        .footer {
+            background: linear-gradient(135deg, #4f46e5, #7c3aed);
+            color: white;
+            padding: 1rem 0;
+            margin-top: 2rem;
+            border-radius: 15px 15px 0 0;
+        }
+    </style>
 </head>
 <body>
-    <nav class="navbar navbar-dark bg-primary">
+    <nav class="navbar navbar-dark">
         <div class="container">
-            <span class="navbar-brand mb-0 h1">📚 کتابخانه PDF هوشمند</span>
+            <span class="navbar-brand">📚 کتابخانه PDF هوشمند</span>
         </div>
     </nav>
 
     <div class="container mt-4">
-        <div class="card mb-4">
+        <div class="card">
             <div class="card-body">
-                <h5 class="card-title">📤 آپلود PDF جدید</h5>
+                <h5 class="card-title">
+                    <span style="font-size: 1.5rem;">📤</span> آپلود PDF جدید
+                </h5>
                 <input type="file" id="pdfUpload" accept=".pdf" class="form-control">
-                <div class="progress mt-2" id="uploadProgress" style="display: none;">
+                <div class="progress mt-3" id="uploadProgress" style="display: none;">
                     <div class="progress-bar" id="progressBar" style="width: 0%;">0%</div>
                 </div>
             </div>
         </div>
 
-        <div class="row" id="pdfList"></div>
+        <h4 style="color: white; text-shadow: 2px 2px 4px rgba(0,0,0,0.3); margin: 20px 0;">
+            📖 کتاب‌های من
+        </h4>
+        <div class="row" id="pdfList">
+            <!-- کتاب‌ها اینجا نمایش داده می‌شن -->
+        </div>
     </div>
 
+    <!-- Modal PDF Viewer -->
     <div class="modal fade" id="pdfModal" tabindex="-1">
         <div class="modal-dialog modal-fullscreen">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="pdfTitle"></h5>
+                    <h5 class="modal-title" id="pdfTitle">...</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body text-center">
-                    <canvas id="pdfCanvas" class="mx-auto"></canvas>
+                    <canvas id="pdfCanvas"></canvas>
                 </div>
                 <div class="modal-footer">
-                    <button class="btn btn-primary" id="prevPage">قبلی</button>
-                    <span id="pageInfo" class="mx-3">صفحه 1 از 1</span>
-                    <button class="btn btn-primary" id="nextPage">بعدی</button>
+                    <button class="btn btn-primary" id="prevPage">◀ قبلی</button>
+                    <span id="pageInfo">صفحه 1 از 1</span>
+                    <button class="btn btn-primary" id="nextPage">بعدی ▶</button>
                 </div>
             </div>
         </div>
     </div>
 
+    <footer class="footer">
+        <div class="container text-center">
+            <p style="margin: 0;">© ۲۰۲۵ کتابخانه PDF هوشمند | تمامی حقوق محفوظ است</p>
+        </div>
+    </footer>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
-    <script src="script.js"></script>
+    <script>
+        // تمام کدهای JavaScript قبلی رو اینجا می‌ذارم
+        let db;
+        let currentPDF = null;
+        let currentPage = 1;
+        let totalPages = 1;
+
+        const dbName = "PDFLibrary";
+        const storeName = "pdfs";
+
+        // راه‌اندازی دیتابیس
+        const request = indexedDB.open(dbName, 1);
+
+        request.onerror = () => {
+            alert("خطا در باز کردن دیتابیس!");
+        };
+
+        request.onupgradeneeded = (event) => {
+            db = event.target.result;
+            db.createObjectStore(storeName, { keyPath: "id", autoIncrement: true });
+        };
+
+        request.onsuccess = (event) => {
+            db = event.target.result;
+            loadPDFList();
+        };
+
+        // آپلود فایل
+        document.getElementById("pdfUpload").addEventListener("change", async (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            const progress = document.getElementById("uploadProgress");
+            const progressBar = document.getElementById("progressBar");
+            progress.style.display = "block";
+            progressBar.style.width = "0%";
+            progressBar.textContent = "0%";
+
+            const reader = new FileReader();
+            
+            reader.onload = () => {
+                const transaction = db.transaction([storeName], "readwrite");
+                const store = transaction.objectStore(storeName);
+                
+                store.add({
+                    name: file.name,
+                    size: file.size,
+                    date: new Date().toISOString(),
+                    data: reader.result
+                });
+
+                progress.style.display = "none";
+                document.getElementById("pdfUpload").value = "";
+                loadPDFList();
+            };
+
+            reader.readAsArrayBuffer(file);
+        });
+
+        // نمایش لیست PDFها
+        function loadPDFList() {
+            const transaction = db.transaction([storeName], "readonly");
+            const store = transaction.objectStore(storeName);
+            const request = store.getAll();
+
+            request.onsuccess = () => {
+                const container = document.getElementById("pdfList");
+                container.innerHTML = "";
+
+                request.result.forEach((pdf, index) => {
+                    const col = document.createElement("div");
+                    col.className = "col-md-4";
+                    col.innerHTML = `
+                        <div class="pdf-card" onclick="openPDF(${index})">
+                            <h5>📄 ${pdf.name}</h5>
+                            <p>📅 ${new Date(pdf.date).toLocaleDateString('fa-IR')}</p>
+                            <p>📊 ${(pdf.size / 1024 / 1024).toFixed(2)} MB</p>
+                            <button class="btn btn-danger btn-sm" onclick="deletePDF(${pdf.id}); event.stopPropagation()">🗑️ حذف</button>
+                        </div>
+                    `;
+                    container.appendChild(col);
+                });
+            };
+        }
+
+        // باز کردن PDF
+        async function openPDF(index) {
+            const transaction = db.transaction([storeName], "readonly");
+            const store = transaction.objectStore(storeName);
+            const request = store.getAll();
+
+            request.onsuccess = async () => {
+                const pdfData = request.result[index];
+                document.getElementById("pdfTitle").textContent = pdfData.name;
+                
+                const loadingTask = pdfjsLib.getDocument({ data: pdfData.data });
+                currentPDF = await loadingTask.promise;
+                totalPages = currentPDF.numPages;
+                
+                await renderPage(1);
+                
+                const modal = new bootstrap.Modal(document.getElementById("pdfModal"));
+                modal.show();
+            };
+        }
+
+        // رندر صفحه
+        async function renderPage(pageNum) {
+            const page = await currentPDF.getPage(pageNum);
+            const scale = 1.5;
+            const viewport = page.getViewport({ scale });
+
+            const canvas = document.getElementById("pdfCanvas");
+            const context = canvas.getContext("2d");
+            canvas.height = viewport.height;
+            canvas.width = viewport.width;
+
+            await page.render({ canvasContext: context, viewport }).promise;
+            
+            document.getElementById("pageInfo").textContent = `صفحه ${pageNum} از ${totalPages}`;
+            currentPage = pageNum;
+        }
+
+        // دکمه‌های صفحه بعد و قبل
+        document.getElementById("nextPage").addEventListener("click", () => {
+            if (currentPage < totalPages) renderPage(currentPage + 1);
+        });
+
+        document.getElementById("prevPage").addEventListener("click", () => {
+            if (currentPage > 1) renderPage(currentPage - 1);
+        });
+
+        // حذف PDF
+        function deletePDF(id) {
+            if (confirm("آیا مطمئن هستید؟")) {
+                const transaction = db.transaction([storeName], "readwrite");
+                transaction.objectStore(storeName).delete(id);
+                transaction.oncomplete = () => loadPDFList();
+            }
+        }
+    </script>
 </body>
 </html>
